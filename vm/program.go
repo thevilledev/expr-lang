@@ -236,6 +236,30 @@ func (program *Program) DisassembleWriter(w io.Writer) {
 		case OpMoreOrEqual:
 			code("OpMoreOrEqual")
 
+		case OpLessInt:
+			code("OpLessInt")
+
+		case OpLessFloat:
+			code("OpLessFloat")
+
+		case OpMoreInt:
+			code("OpMoreInt")
+
+		case OpMoreFloat:
+			code("OpMoreFloat")
+
+		case OpLessOrEqualInt:
+			code("OpLessOrEqualInt")
+
+		case OpLessOrEqualFloat:
+			code("OpLessOrEqualFloat")
+
+		case OpMoreOrEqualInt:
+			code("OpMoreOrEqualInt")
+
+		case OpMoreOrEqualFloat:
+			code("OpMoreOrEqualFloat")
+
 		case OpAdd:
 			code("OpAdd")
 
@@ -250,6 +274,30 @@ func (program *Program) DisassembleWriter(w io.Writer) {
 
 		case OpModulo:
 			code("OpModulo")
+
+		case OpAddInt:
+			code("OpAddInt")
+
+		case OpAddFloat:
+			code("OpAddFloat")
+
+		case OpSubtractInt:
+			code("OpSubtractInt")
+
+		case OpSubtractFloat:
+			code("OpSubtractFloat")
+
+		case OpMultiplyInt:
+			code("OpMultiplyInt")
+
+		case OpMultiplyFloat:
+			code("OpMultiplyFloat")
+
+		case OpDivideInt:
+			code("OpDivideInt")
+
+		case OpDivideFloat:
+			code("OpDivideFloat")
 
 		case OpExponent:
 			code("OpExponent")

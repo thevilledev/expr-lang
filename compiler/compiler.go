@@ -488,60 +488,28 @@ func (c *compiler) BinaryNode(node *ast.BinaryNode) {
 		c.patchJump(end)
 
 	case "<":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpLess)
+		c.comparisonBinaryNode(node, OpLess, OpLessInt, OpLessFloat)
 
 	case ">":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpMore)
+		c.comparisonBinaryNode(node, OpMore, OpMoreInt, OpMoreFloat)
 
 	case "<=":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpLessOrEqual)
+		c.comparisonBinaryNode(node, OpLessOrEqual, OpLessOrEqualInt, OpLessOrEqualFloat)
 
 	case ">=":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpMoreOrEqual)
+		c.comparisonBinaryNode(node, OpMoreOrEqual, OpMoreOrEqualInt, OpMoreOrEqualFloat)
 
 	case "+":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpAdd)
+		c.arithmeticBinaryNode(node, OpAdd, OpAddInt, OpAddFloat)
 
 	case "-":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpSubtract)
+		c.arithmeticBinaryNode(node, OpSubtract, OpSubtractInt, OpSubtractFloat)
 
 	case "*":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpMultiply)
+		c.arithmeticBinaryNode(node, OpMultiply, OpMultiplyInt, OpMultiplyFloat)
 
 	case "/":
-		c.compile(node.Left)
-		c.derefInNeeded(node.Left)
-		c.compile(node.Right)
-		c.derefInNeeded(node.Right)
-		c.emit(OpDivide)
+		c.arithmeticBinaryNode(node, OpDivide, OpDivideInt, OpDivideFloat)
 
 	case "%":
 		c.compile(node.Left)
@@ -655,6 +623,69 @@ func isSimpleType(node ast.Node) bool {
 		return false
 	}
 	return t.PkgPath() == ""
+}
+
+func (c *compiler) comparisonBinaryNode(node *ast.BinaryNode, generic, intOp, floatOp Opcode) {
+	l := kind(node.Left.Type())
+	r := kind(node.Right.Type())
+
+	leftIsSimple := isSimpleType(node.Left)
+	rightIsSimple := isSimpleType(node.Right)
+	leftAndRightAreSimple := leftIsSimple && rightIsSimple
+	// Avoid specialization for function calls as their inferred types may be inaccurate
+	noFunctionCalls := !isCallNode(node.Left) && !isCallNode(node.Right)
+
+	c.compile(node.Left)
+	c.derefInNeeded(node.Left)
+	c.compile(node.Right)
+	c.derefInNeeded(node.Right)
+
+	if l == r && l == reflect.Int && leftAndRightAreSimple && noFunctionCalls {
+		c.emit(intOp)
+	} else if l == r && l == reflect.Float64 && leftAndRightAreSimple && noFunctionCalls {
+		c.emit(floatOp)
+	} else {
+		c.emit(generic)
+	}
+}
+
+func (c *compiler) arithmeticBinaryNode(node *ast.BinaryNode, generic, intOp, floatOp Opcode) {
+	l := kind(node.Left.Type())
+	r := kind(node.Right.Type())
+
+	leftIsSimple := isSimpleType(node.Left)
+	rightIsSimple := isSimpleType(node.Right)
+	leftAndRightAreSimple := leftIsSimple && rightIsSimple
+	// Avoid specialization for function calls as their inferred types may be inaccurate
+	noFunctionCalls := !isCallNode(node.Left) && !isCallNode(node.Right)
+
+	c.compile(node.Left)
+	c.derefInNeeded(node.Left)
+	c.compile(node.Right)
+	c.derefInNeeded(node.Right)
+
+	if l == r && l == reflect.Int && leftAndRightAreSimple && noFunctionCalls {
+		c.emit(intOp)
+	} else if l == r && l == reflect.Float64 && leftAndRightAreSimple && noFunctionCalls {
+		c.emit(floatOp)
+	} else {
+		c.emit(generic)
+	}
+}
+
+// isCallNode returns true if the node contains a function or method call.
+// We avoid specializing binary operations involving calls because
+// the type checker may infer incorrect types for some builtin functions.
+func isCallNode(node ast.Node) bool {
+	switch n := node.(type) {
+	case *ast.CallNode, *ast.BuiltinNode:
+		return true
+	case *ast.UnaryNode:
+		return isCallNode(n.Node)
+	case *ast.BinaryNode:
+		return isCallNode(n.Left) || isCallNode(n.Right)
+	}
+	return false
 }
 
 func (c *compiler) ChainNode(node *ast.ChainNode) {

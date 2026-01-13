@@ -38,11 +38,27 @@ const (
 	OpMore
 	OpLessOrEqual
 	OpMoreOrEqual
+	OpLessInt
+	OpLessFloat
+	OpMoreInt
+	OpMoreFloat
+	OpLessOrEqualInt
+	OpLessOrEqualFloat
+	OpMoreOrEqualInt
+	OpMoreOrEqualFloat
 	OpAdd
 	OpSubtract
 	OpMultiply
 	OpDivide
 	OpModulo
+	OpAddInt
+	OpAddFloat
+	OpSubtractInt
+	OpSubtractFloat
+	OpMultiplyInt
+	OpMultiplyFloat
+	OpDivideInt
+	OpDivideFloat
 	OpExponent
 	OpRange
 	OpMatches

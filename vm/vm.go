@@ -284,6 +284,86 @@ func (vm *VM) Run(program *Program, env any) (_ any, err error) {
 			a := vm.pop()
 			vm.push(runtime.Exponent(a, b))
 
+		case OpLessInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) < b.(int))
+
+		case OpLessFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) < b.(float64))
+
+		case OpMoreInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) > b.(int))
+
+		case OpMoreFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) > b.(float64))
+
+		case OpLessOrEqualInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) <= b.(int))
+
+		case OpLessOrEqualFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) <= b.(float64))
+
+		case OpMoreOrEqualInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) >= b.(int))
+
+		case OpMoreOrEqualFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) >= b.(float64))
+
+		case OpAddInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) + b.(int))
+
+		case OpAddFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) + b.(float64))
+
+		case OpSubtractInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) - b.(int))
+
+		case OpSubtractFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) - b.(float64))
+
+		case OpMultiplyInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(int) * b.(int))
+
+		case OpMultiplyFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) * b.(float64))
+
+		case OpDivideInt:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(float64(a.(int)) / float64(b.(int)))
+
+		case OpDivideFloat:
+			b := vm.pop()
+			a := vm.pop()
+			vm.push(a.(float64) / b.(float64))
+
 		case OpRange:
 			b := vm.pop()
 			a := vm.pop()

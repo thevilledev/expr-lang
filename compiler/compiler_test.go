@@ -127,6 +127,62 @@ func TestCompile(t *testing.T) {
 			},
 		},
 		{
+			`10 + 20`,
+			vm.Program{
+				Constants: []any{
+					10, 20,
+				},
+				Bytecode: []vm.Opcode{
+					vm.OpPush,
+					vm.OpPush,
+					vm.OpAddInt,
+				},
+				Arguments: []int{0, 1, 0},
+			},
+		},
+		{
+			`1.5 + 2.5`,
+			vm.Program{
+				Constants: []any{
+					1.5, 2.5,
+				},
+				Bytecode: []vm.Opcode{
+					vm.OpPush,
+					vm.OpPush,
+					vm.OpAddFloat,
+				},
+				Arguments: []int{0, 1, 0},
+			},
+		},
+		{
+			`10 < 20`,
+			vm.Program{
+				Constants: []any{
+					10, 20,
+				},
+				Bytecode: []vm.Opcode{
+					vm.OpPush,
+					vm.OpPush,
+					vm.OpLessInt,
+				},
+				Arguments: []int{0, 1, 0},
+			},
+		},
+		{
+			`1.5 > 0.5`,
+			vm.Program{
+				Constants: []any{
+					1.5, 0.5,
+				},
+				Bytecode: []vm.Opcode{
+					vm.OpPush,
+					vm.OpPush,
+					vm.OpMoreFloat,
+				},
+				Arguments: []int{0, 1, 0},
+			},
+		},
+		{
 			`-1`,
 			vm.Program{
 				Constants: []any{1},
@@ -520,7 +576,7 @@ func TestCompile_optimizes_jumps(t *testing.T) {
 2   OpJumpIfEnd  <23>  (26)
 3   OpPointer
 4   OpPush  <1>  3
-5   OpMore
+5   OpMoreInt
 6   OpJumpIfFalse  <16>  (23)
 7   OpPop
 8   OpPointer

@@ -1251,6 +1251,217 @@ func TestVM_DirectBasicOpcodes(t *testing.T) {
 			consts:  []any{fmt.Errorf("test error")},
 			wantErr: true,
 		},
+		// Tests for specialized arithmetic opcodes
+		{
+			name: "OpAddInt",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpAddInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{10, 20},
+			want:   30,
+		},
+		{
+			name: "OpAddFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpAddFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{1.5, 2.5},
+			want:   4.0,
+		},
+		{
+			name: "OpSubtractInt",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpSubtractInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{30, 10},
+			want:   20,
+		},
+		{
+			name: "OpSubtractFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpSubtractFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{5.0, 2.5},
+			want:   2.5,
+		},
+		{
+			name: "OpMultiplyInt",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMultiplyInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{6, 7},
+			want:   42,
+		},
+		{
+			name: "OpMultiplyFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMultiplyFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{2.5, 4.0},
+			want:   10.0,
+		},
+		{
+			name: "OpDivideInt",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpDivideInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{10, 4},
+			want:   2.5, // Always returns float64
+		},
+		{
+			name: "OpDivideFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpDivideFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{10.0, 4.0},
+			want:   2.5,
+		},
+		// Tests for specialized comparison opcodes
+		{
+			name: "OpLessInt true",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpLessInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{5, 10},
+			want:   true,
+		},
+		{
+			name: "OpLessInt false",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpLessInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{10, 5},
+			want:   false,
+		},
+		{
+			name: "OpLessFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpLessFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{1.5, 2.5},
+			want:   true,
+		},
+		{
+			name: "OpMoreInt true",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMoreInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{10, 5},
+			want:   true,
+		},
+		{
+			name: "OpMoreFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMoreFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{2.5, 1.5},
+			want:   true,
+		},
+		{
+			name: "OpLessOrEqualInt equal",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpLessOrEqualInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{5, 5},
+			want:   true,
+		},
+		{
+			name: "OpLessOrEqualInt less",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpLessOrEqualInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{5, 10},
+			want:   true,
+		},
+		{
+			name: "OpLessOrEqualFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpLessOrEqualFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{1.5, 1.5},
+			want:   true,
+		},
+		{
+			name: "OpMoreOrEqualInt equal",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMoreOrEqualInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{5, 5},
+			want:   true,
+		},
+		{
+			name: "OpMoreOrEqualInt more",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMoreOrEqualInt,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{10, 5},
+			want:   true,
+		},
+		{
+			name: "OpMoreOrEqualFloat",
+			bytecode: []vm.Opcode{
+				vm.OpPush,
+				vm.OpPush,
+				vm.OpMoreOrEqualFloat,
+			},
+			args:   []int{0, 1, 0},
+			consts: []any{2.5, 2.5},
+			want:   true,
+		},
 	}
 
 	for _, tt := range tests {
