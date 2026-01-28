@@ -204,6 +204,49 @@ func TestDeref_nil_in_pointer_of_interface(t *testing.T) {
 	})
 }
 
+func TestDeref_nil_pointer_field_access(t *testing.T) {
+	type Nested struct {
+		Value string
+	}
+	type Parent struct {
+		Child *Nested
+	}
+
+	env := Parent{
+		Child: nil,
+	}
+
+	program, err := expr.Compile(`Child.Value`, expr.Env(env))
+	require.NoError(t, err)
+
+	_, err = expr.Run(program, env)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "nil pointer")
+}
+
+func TestDeref_deep_nil_pointer_field_access(t *testing.T) {
+	type Nested struct {
+		Value string
+	}
+	type Parent struct {
+		Child *Nested
+	}
+	type DeepNested struct {
+		Deep *Parent
+	}
+
+	env := DeepNested{
+		Deep: &Parent{Child: nil},
+	}
+
+	program, err := expr.Compile(`Deep.Child.Value`, expr.Env(env))
+	require.NoError(t, err)
+
+	_, err = expr.Run(program, env)
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "nil pointer")
+}
+
 func TestDeref_commutative(t *testing.T) {
 	a := "ok"
 	b := "ok"

@@ -109,6 +109,9 @@ type Field struct {
 func FetchField(from any, field *Field) any {
 	v := reflect.ValueOf(from)
 	if v.Kind() != reflect.Invalid {
+		if v.Kind() == reflect.Ptr && v.IsNil() {
+			panic(fmt.Sprintf("cannot get %v from nil pointer", field.Path[0]))
+		}
 		v = reflect.Indirect(v)
 
 		// We can use v.FieldByIndex here, but it will panic if the field
@@ -133,7 +136,7 @@ func fieldByIndex(v reflect.Value, field *Field) reflect.Value {
 		if i > 0 {
 			if v.Kind() == reflect.Ptr {
 				if v.IsNil() {
-					panic(fmt.Sprintf("cannot get %v from %v", field.Path[i], field.Path[i-1]))
+					panic(fmt.Sprintf("cannot get %v from nil pointer %v", field.Path[i], field.Path[i-1]))
 				}
 				v = v.Elem()
 			}
